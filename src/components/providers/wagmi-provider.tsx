@@ -17,7 +17,7 @@ const queryClient = new QueryClient();
 
 // AppKit init is client-only — never analyzed during SSR
 const AppKitInit = dynamic(
-  () => import('@/components/providers/appkit-init').then((m) => m.AppKitInit),
+  () => import('@/components/providers/appkit-init').then((m) => ({ default: m.AppKitInit || m.default })),
   { ssr: false },
 );
 

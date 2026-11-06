@@ -1,15 +1,13 @@
-/**
- * app/error.tsx — root error boundary for the public site.
- *
- * Catches render errors in any route under the root layout EXCEPT the root
- * layout itself (that's global-error.tsx). Logs the error to the server.
- */
 'use client';
 
+/**
+ * app/error.tsx — root error boundary for the public site.
+ * Displays error details for troubleshooting while preserving the try-again action.
+ */
 import { useEffect } from 'react';
 import Link from 'next/link';
 
-export default function Error({
+export default function ErrorBoundary({
   error,
   reset,
 }: {
@@ -17,6 +15,7 @@ export default function Error({
   reset: () => void;
 }) {
   useEffect(() => {
+    console.error('[Root Error Boundary caught]:', error);
     void fetch('/api/client-error', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -36,47 +35,94 @@ export default function Error({
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        minHeight: '60vh',
+        minHeight: '70vh',
         padding: '2rem',
         textAlign: 'center',
-        fontFamily: 'system-ui, sans-serif',
+        fontFamily: 'system-ui, -apple-system, sans-serif',
+        background: '#0d0d12',
+        color: '#ffffff',
       }}
     >
-      <h2 style={{ fontSize: '1.25rem', marginBottom: '0.5rem' }}>
-        Something went wrong
+      <div
+        style={{
+          width: '56px',
+          height: '56px',
+          borderRadius: '16px',
+          background: 'rgba(239, 68, 68, 0.15)',
+          color: '#ef4444',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginBottom: '1rem',
+          fontSize: '28px',
+        }}
+      >
+        ⚠️
+      </div>
+      <h2 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '0.5rem', color: '#ffffff' }}>
+        Application Error
       </h2>
-      <p style={{ color: '#8e8e93', marginBottom: '1.5rem', maxWidth: '28rem' }}>
-        We hit an unexpected error while loading this page. The error has been logged.
+      <p style={{ color: '#ef4444', marginBottom: '1rem', maxWidth: '36rem', fontWeight: 600, fontSize: '0.95rem' }}>
+        {error?.message || 'An unexpected runtime error occurred.'}
       </p>
+
+      {error?.stack && (
+        <pre
+          style={{
+            maxWidth: '48rem',
+            width: '100%',
+            overflowX: 'auto',
+            background: 'rgba(0,0,0,0.5)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            borderRadius: '12px',
+            padding: '1rem',
+            textAlign: 'left',
+            fontSize: '0.75rem',
+            color: '#a1a1aa',
+            lineHeight: 1.5,
+            marginBottom: '1.5rem',
+          }}
+        >
+          {error.stack}
+        </pre>
+      )}
+
+      {error?.digest && (
+        <p style={{ fontSize: '0.75rem', color: '#71717a', marginBottom: '1.5rem' }}>
+          Digest: {error.digest}
+        </p>
+      )}
+
       <div style={{ display: 'flex', gap: '0.75rem' }}>
         <button
           type="button"
           onClick={reset}
           style={{
-            padding: '0.6rem 1.25rem',
+            padding: '0.7rem 1.5rem',
             borderRadius: '12px',
             border: 'none',
-            background: '#007aff',
-            color: 'white',
-            fontWeight: 600,
+            background: '#7A12F5',
+            color: '#ffffff',
+            fontWeight: 700,
             cursor: 'pointer',
+            boxShadow: '0 4px 14px rgba(122, 18, 245, 0.4)',
           }}
         >
           Try again
         </button>
         <Link
-          href="/"
+          href="/app/portfolio"
           style={{
-            padding: '0.6rem 1.25rem',
+            padding: '0.7rem 1.5rem',
             borderRadius: '12px',
-            border: '1px solid #d1d1d6',
-            background: 'transparent',
-            color: '#000',
-            fontWeight: 600,
+            border: '1px solid rgba(255,255,255,0.15)',
+            background: 'rgba(255,255,255,0.05)',
+            color: '#ffffff',
+            fontWeight: 700,
             textDecoration: 'none',
           }}
         >
-          Go home
+          Reload Dashboard
         </Link>
       </div>
     </div>

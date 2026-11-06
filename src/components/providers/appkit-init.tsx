@@ -255,3 +255,6 @@ export function AppKitInit({ children }: { children: ReactNode }) {
   if (!ready) return null;
   return <>{children}</>;
 }
+
+export default AppKitInit;
+

@@ -1,11 +1,9 @@
-/**
- * app/[locale]/app/error.tsx — dashboard error boundary.
- *
- * Catches render errors inside the /app dashboard tree. The layout (sidebar,
- * header) is preserved — only the page content area shows the error card.
- */
 'use client';
 
+/**
+ * app/[locale]/app/error.tsx — dashboard error boundary.
+ * Displays error details for troubleshooting while preserving the try-again action.
+ */
 import { useEffect } from 'react';
 import Link from 'next/link';
 
@@ -17,6 +15,7 @@ export default function AppError({
   reset: () => void;
 }) {
   useEffect(() => {
+    console.error('[App Error boundary caught]:', error);
     void fetch('/api/client-error', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -31,8 +30,8 @@ export default function AppError({
   }, [error]);
 
   return (
-    <div className="mx-auto flex max-w-md flex-col items-center justify-center gap-4 px-4 py-16 text-center">
-      <div className="rounded-2xl bg-destructive/10 p-3">
+    <div className="mx-auto flex max-w-2xl flex-col items-center justify-center gap-4 px-4 py-12 text-center">
+      <div className="rounded-2xl bg-destructive/15 p-3.5 text-destructive">
         <svg
           className="size-8 text-destructive"
           fill="none"
@@ -47,23 +46,34 @@ export default function AppError({
           />
         </svg>
       </div>
-      <h2 className="text-lg font-semibold">Page error</h2>
-      <p className="text-sm text-muted-foreground">
-        This page hit an error. Your data is safe. The error has been logged.
+      <h2 className="text-xl font-extrabold text-[var(--tx)]">Dashboard Render Error</h2>
+      <p className="text-sm font-semibold text-destructive max-w-lg">
+        {error?.message || 'This page hit a runtime render error.'}
       </p>
-      <div className="flex gap-2">
+
+      {error?.stack && (
+        <pre className="w-full max-h-60 overflow-auto rounded-xl border border-[var(--line)] bg-[var(--s2)] p-4 text-left text-xs text-[var(--mut)] font-mono leading-relaxed">
+          {error.stack}
+        </pre>
+      )}
+
+      {error?.digest && (
+        <p className="text-xs text-[var(--mut)]">Digest: {error.digest}</p>
+      )}
+
+      <div className="flex gap-3 mt-2">
         <button
           type="button"
           onClick={reset}
-          className="rounded-ios bg-ios-blue px-5 py-2.5 text-sm font-semibold text-white active:opacity-80"
+          className="rounded-xl bg-[#7A12F5] px-5 py-2.5 text-xs font-bold text-white shadow-lg shadow-[#7A12F5]/30 hover:bg-[#8C38F7] active:scale-95 transition-all cursor-pointer"
         >
           Try again
         </button>
         <Link
           href="/app/portfolio"
-          className="rounded-ios border border-border px-5 py-2.5 text-sm font-semibold text-foreground"
+          className="rounded-xl border border-[var(--line)] bg-[var(--s2)] px-5 py-2.5 text-xs font-bold text-[var(--tx)] hover:bg-[var(--s1)] active:scale-95 transition-all"
         >
-          Dashboard
+          Reload Dashboard
         </Link>
       </div>
     </div>

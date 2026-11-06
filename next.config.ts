@@ -117,6 +117,17 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  turbopack: {
+    resolveAlias: {
+      '@okn/shared': path.resolve(projectRoot, 'src/shared/index.ts'),
+      '@x402/core/client': path.resolve(projectRoot, 'src/lib/empty-module.js'),
+      '@x402/core/server': path.resolve(projectRoot, 'src/lib/empty-module.js'),
+      '@x402/evm': path.resolve(projectRoot, 'src/lib/empty-module.js'),
+      '@x402/evm/exact/client': path.resolve(projectRoot, 'src/lib/empty-module.js'),
+      '@x402/evm/upto/client': path.resolve(projectRoot, 'src/lib/empty-module.js'),
+      '@x402/svm/exact/client': path.resolve(projectRoot, 'src/lib/empty-module.js'),
+    },
+  },
   webpack: (config) => {
     config.resolve = config.resolve ?? {};
     config.resolve.alias = {
@@ -127,12 +138,12 @@ const nextConfig: NextConfig = {
       encoding: false,
       '@react-native-async-storage/async-storage': false,
       '@base-org/account': false,
-      '@x402/evm': false,
-      '@x402/evm/upto/client': false,
-      '@x402/evm/exact/client': false,
-      '@x402/core/client': false,
-      '@x402/core/server': false,
-      '@x402/svm/exact/client': false,
+      '@x402/evm': path.resolve(projectRoot, 'src/lib/empty-module.js'),
+      '@x402/evm/upto/client': path.resolve(projectRoot, 'src/lib/empty-module.js'),
+      '@x402/evm/exact/client': path.resolve(projectRoot, 'src/lib/empty-module.js'),
+      '@x402/core/client': path.resolve(projectRoot, 'src/lib/empty-module.js'),
+      '@x402/core/server': path.resolve(projectRoot, 'src/lib/empty-module.js'),
+      '@x402/svm/exact/client': path.resolve(projectRoot, 'src/lib/empty-module.js'),
     };
     return config;
   },

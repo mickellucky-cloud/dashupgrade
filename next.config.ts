@@ -53,10 +53,6 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       {
-        source: '/',
-        destination: '/app/portfolio',
-      },
-      {
         source: '/portfolio',
         destination: '/app/portfolio',
       },
@@ -120,25 +116,27 @@ const nextConfig: NextConfig = {
   },
   turbopack: {
     resolveAlias: {
-      '@okn/shared': path.resolve(projectRoot, 'src/shared/index.ts'),
-      '@coinbase/cdp-sdk': path.resolve(projectRoot, 'src/lib/empty-module.js'),
-      '@base-org/account': path.resolve(projectRoot, 'src/lib/empty-module.js'),
-      '@solana/kit': path.resolve(projectRoot, 'src/lib/empty-module.js'),
-      '@x402/core': path.resolve(projectRoot, 'src/lib/empty-module.js'),
-      '@x402/core/client': path.resolve(projectRoot, 'src/lib/empty-module.js'),
-      '@x402/core/server': path.resolve(projectRoot, 'src/lib/empty-module.js'),
-      '@x402/evm': path.resolve(projectRoot, 'src/lib/empty-module.js'),
-      '@x402/evm/exact/client': path.resolve(projectRoot, 'src/lib/empty-module.js'),
-      '@x402/evm/upto/client': path.resolve(projectRoot, 'src/lib/empty-module.js'),
-      '@x402/svm': path.resolve(projectRoot, 'src/lib/empty-module.js'),
-      '@x402/svm/exact/client': path.resolve(projectRoot, 'src/lib/empty-module.js'),
-      'pino-pretty': path.resolve(projectRoot, 'src/lib/empty-module.js'),
-      'lokijs': path.resolve(projectRoot, 'src/lib/empty-module.js'),
-      'encoding': path.resolve(projectRoot, 'src/lib/empty-module.js'),
+      '@okn/shared': './src/shared/index.ts',
+      '@coinbase/cdp-sdk': './src/lib/empty-module.js',
+      '@base-org/account': './src/lib/empty-module.js',
+      '@solana/kit': './src/lib/empty-module.js',
+      '@x402/core': './src/lib/empty-module.js',
+      '@x402/core/client': './src/lib/empty-module.js',
+      '@x402/core/server': './src/lib/empty-module.js',
+      '@x402/evm': './src/lib/empty-module.js',
+      '@x402/evm/exact/client': './src/lib/empty-module.js',
+      '@x402/evm/upto/client': './src/lib/empty-module.js',
+      '@x402/svm': './src/lib/empty-module.js',
+      '@x402/svm/exact/client': './src/lib/empty-module.js',
+      '@wagmi/core/tempo': './src/lib/empty-module.js',
+      'pino-pretty': './src/lib/empty-module.js',
+      'lokijs': './src/lib/empty-module.js',
+      'encoding': './src/lib/empty-module.js',
     },
   },
   webpack: (config) => {
     config.resolve = config.resolve ?? {};
+    config.resolve.symlinks = false;
     config.resolve.alias = {
       ...(config.resolve.alias ?? {}),
       '@okn/shared': path.resolve(projectRoot, 'src/shared/index.ts'),
@@ -153,6 +151,7 @@ const nextConfig: NextConfig = {
       '@x402/evm/upto/client': path.resolve(projectRoot, 'src/lib/empty-module.js'),
       '@x402/svm': path.resolve(projectRoot, 'src/lib/empty-module.js'),
       '@x402/svm/exact/client': path.resolve(projectRoot, 'src/lib/empty-module.js'),
+      '@wagmi/core/tempo': path.resolve(projectRoot, 'src/lib/empty-module.js'),
       'pino-pretty': false,
       lokijs: false,
       encoding: false,

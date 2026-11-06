@@ -18,6 +18,12 @@ export class x402Client {
 }
 export const createPaymentPayload = () => ({});
 
+export const tempoWallet = () => ({});
+export const baseAccount = () => ({});
+export const coinbaseWallet = () => ({});
+export const metaMask = () => ({});
+export const injected = () => ({});
+
 const handler = {
   get: (target, prop) => {
     if (prop === '__esModule') return true;

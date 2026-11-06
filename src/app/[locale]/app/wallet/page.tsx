@@ -448,7 +448,7 @@ export default function WalletPage() {
             </div>
 
             <div className="flex items-center justify-between p-3 rounded-xl bg-[var(--s2)] border border-[var(--line)]">
-              <span>NOWPayments Gateway</span>
+              <span>Crypto Deposit Gateway</span>
               <span className="font-bold text-[#00C2FF]">300+ Assets Enabled</span>
             </div>
 

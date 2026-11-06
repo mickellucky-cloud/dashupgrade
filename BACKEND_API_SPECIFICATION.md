@@ -112,7 +112,7 @@ Every endpoint below is stubbed with realistic mock responses in `src/app/api/` 
 }
 ```
 
-### `POST /api/sale/deposit` (Primary Gateway: NOWPayments / 300+ Crypto)
+### `POST /api/sale/deposit` (Primary Gateway: Multi-Crypto Direct Deposit)
 - **Request Body**:
 ```json
 {
@@ -125,7 +125,7 @@ Every endpoint below is stubbed with realistic mock responses in `src/app/api/` 
 ```json
 {
   "success": true,
-  "paymentId": "now_179391512",
+  "paymentId": "dep_179391512",
   "payCurrency": "USDTBSC",
   "payAmount": 100,
   "payAddress": "0x46fC09a84C23c94Ea6853450253C050be44dB751",
@@ -149,7 +149,7 @@ Every endpoint below is stubbed with realistic mock responses in `src/app/api/` 
 ```
 
 ### `POST /api/sale/webhook` (IPN / Payment Callback)
-- **Purpose**: Handles instant IPN notifications from NOWPayments or BSC indexing worker.
+- **Purpose**: Handles instant IPN notifications from payment gateway or BSC indexing worker.
 
 ---
 

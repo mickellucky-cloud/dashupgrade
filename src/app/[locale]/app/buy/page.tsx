@@ -3,21 +3,28 @@
 /**
  * /app/buy — Fixed-Rate $OKN Presale Gateway.
  *
- * Exclusively implements:
- *   1. Web3 Wallet (BNB on BSC) with instant on-chain execution
- *   2. NOWPayments (300+ Crypto) with dynamic invoice generation & automated routing
+ * Implements two distinct payment services:
+ *   1. Deposit: Multi-Crypto Direct Deposit (USDT, BTC, ETH, SOL, BNB, and 300+ coins)
+ *   2. Connect Wallet: Direct Web3 BNB Smart Chain instant execution
  */
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import {
   AlertCircle,
   ArrowRight,
+  ArrowRightLeft,
   Check,
+  CheckCircle2,
+  ChevronDown,
+  ChevronRight,
+  Clock,
   Coins,
   Copy,
   ExternalLink,
   Flame,
+  HelpCircle,
   Info,
+  Lock,
   QrCode,
   ShieldCheck,
   ShoppingCart,
@@ -56,12 +63,14 @@ export default function BuyPage() {
 
   // Primary: Deposit, Secondary: Connect Wallet
   const [activeTab, setActiveTab] = useState<GatewayTab>('deposit');
+  const [guideTab, setGuideTab] = useState<GatewayTab>('deposit');
+  const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
 
   // Web3 BNB State
   const [bnbAmount, setBnbAmount] = useState('1.0');
   const [isSubmittingWeb3, setIsSubmittingWeb3] = useState(false);
 
-  // NOWPayments State
+  // Crypto Deposit State
   const [selectedCrypto, setSelectedCrypto] = useState<CryptoOption>(CRYPTO_OPTIONS[0]);
   const [usdAmount, setUsdAmount] = useState('250');
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
@@ -93,8 +102,9 @@ export default function BuyPage() {
     setTimeout(() => {
       setIsSubmittingWeb3(false);
       triggerConfetti();
+      const addrShort = address ? `${address.slice(0, 6)}...${address.slice(-4)}` : 'your wallet';
       toast.success(
-        `Purchase confirmed! ${formatPoints(totalOknFromBnb)} $OKN allocated to ${shortAddress(address || '')}.`,
+        `Purchase confirmed! ${formatPoints(totalOknFromBnb)} $OKN allocated to ${addrShort}.`,
       );
     }, 1500);
   };
@@ -111,7 +121,7 @@ export default function BuyPage() {
     try {
       await navigator.clipboard.writeText('0x892aF21b76A93F424e75A0Bf9689874D14c9B231');
       setInvoiceCopied(true);
-      toast.success('NOWPayments deposit address copied!');
+      toast.success('Deposit address copied!');
       setTimeout(() => setInvoiceCopied(false), 2000);
     } catch {
       toast.info('Address copied');
@@ -119,7 +129,7 @@ export default function BuyPage() {
   };
 
   return (
-    <main className="space-y-6">
+    <main className="space-y-8 pb-10">
       {/* 1. Presale Stage 2 Live Hero Card */}
       <section className="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-[#7A12F5] via-[#660CD9] to-[#4A00A8] p-6 md:p-8 text-white shadow-xl">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -159,7 +169,10 @@ export default function BuyPage() {
         {/* Primary Processor: Deposit */}
         <button
           type="button"
-          onClick={() => setActiveTab('deposit')}
+          onClick={() => {
+            setActiveTab('deposit');
+            setGuideTab('deposit');
+          }}
           className={`flex-1 flex items-center justify-center gap-2 h-11 rounded-xl text-xs sm:text-sm font-extrabold transition-all cursor-pointer ${
             activeTab === 'deposit'
               ? 'bg-[#7A12F5] text-white shadow-md'
@@ -173,7 +186,10 @@ export default function BuyPage() {
         {/* Secondary Processor: Connect Wallet */}
         <button
           type="button"
-          onClick={() => setActiveTab('connect-wallet')}
+          onClick={() => {
+            setActiveTab('connect-wallet');
+            setGuideTab('connect-wallet');
+          }}
           className={`flex-1 flex items-center justify-center gap-2 h-11 rounded-xl text-xs sm:text-sm font-extrabold transition-all cursor-pointer ${
             activeTab === 'connect-wallet'
               ? 'bg-[#7A12F5] text-white shadow-md'
@@ -394,7 +410,7 @@ export default function BuyPage() {
                 className="w-full h-13 rounded-2xl bg-gradient-to-r from-[#00C2FF] to-[#0066FF] text-white text-sm font-extrabold shadow-lg shadow-[#00C2FF]/25 hover:brightness-110 active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center gap-2"
               >
                 <Coins className="size-4" />
-                <span>Generate NOWPayments Invoice</span>
+                <span>Generate Deposit Invoice</span>
               </button>
             </div>
           )}
@@ -442,7 +458,7 @@ export default function BuyPage() {
             </div>
 
             <p className="text-xs text-[var(--mut)] leading-relaxed">
-              All contributions made via Web3 or NOWPayments are recorded cryptographically. Tokens are reserved in the Merkle root ledger with zero lockup at launch.
+              All contributions made via Connect Wallet or Direct Deposit are recorded cryptographically. Tokens are reserved in the Merkle root ledger with zero lockup at launch.
             </p>
 
             <div className="pt-2 flex items-center gap-2">
@@ -453,16 +469,314 @@ export default function BuyPage() {
         </div>
       </div>
 
-      {/* NOWPayments Live Invoice Modal */}
+      {/* 4. DETAILED STEP-BY-STEP PURCHASE GUIDE (Aesthetic & Interactive) */}
+      <section className="rounded-[28px] border border-[var(--line)] bg-[var(--s1)] p-6 md:p-8 shadow-sm space-y-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <div className="inline-flex items-center gap-1.5 text-xs font-extrabold text-[#7A12F5] dark:text-[#C9A6FF] uppercase tracking-wider">
+              <Sparkles className="size-3.5" />
+              <span>User Tutorial</span>
+            </div>
+            <h2 className="text-xl md:text-2xl font-black text-[var(--tx)] mt-1">
+              How to Purchase $OKN Tokens
+            </h2>
+            <p className="text-xs md:text-sm text-[var(--mut)] mt-1">
+              Follow our straightforward step-by-step instructions for either payment method below.
+            </p>
+          </div>
+
+          {/* Guide Method Switcher */}
+          <div className="inline-flex items-center p-1 rounded-2xl border border-[var(--line)] bg-[var(--s2)] shrink-0">
+            <button
+              type="button"
+              onClick={() => setGuideTab('deposit')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-extrabold transition-all cursor-pointer ${
+                guideTab === 'deposit'
+                  ? 'bg-[#00C2FF] text-black shadow-sm'
+                  : 'text-[var(--mut)] hover:text-[var(--tx)]'
+              }`}
+            >
+              <Coins className="size-3.5" />
+              <span>Deposit (300+ Crypto)</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setGuideTab('connect-wallet')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-extrabold transition-all cursor-pointer ${
+                guideTab === 'connect-wallet'
+                  ? 'bg-[#7A12F5] text-white shadow-sm'
+                  : 'text-[var(--mut)] hover:text-[var(--tx)]'
+              }`}
+            >
+              <Wallet className="size-3.5" />
+              <span>Connect Wallet (Web3 BNB)</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Dynamic Step Cards Container */}
+        {guideTab === 'deposit' ? (
+          /* ================= DEPOSIT STEPS ================= */
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Step 1 */}
+            <div className="rounded-2xl border border-[var(--line)] bg-[var(--s2)] p-5 space-y-3 relative overflow-hidden group hover:border-[#00C2FF]/50 transition-colors">
+              <div className="flex items-center justify-between">
+                <span className="flex size-9 items-center justify-center rounded-xl bg-[#00C2FF]/15 text-[#00C2FF] text-xs font-black">
+                  01
+                </span>
+                <Coins className="size-4 text-[var(--mut)] group-hover:text-[#00C2FF] transition-colors" />
+              </div>
+              <h4 className="text-sm font-extrabold text-[var(--tx)]">Choose Asset & Amount</h4>
+              <p className="text-xs text-[var(--mut)] leading-relaxed">
+                Select your preferred currency (USDT on BSC/Tron, BTC, ETH, SOL, or 300+ options) and enter the USD contribution amount ($30 min).
+              </p>
+              <div className="pt-2">
+                <span className="inline-block text-[10px] font-bold text-[#00C2FF] bg-[#00C2FF]/10 px-2 py-0.5 rounded-md">
+                  No Wallet Connection Required
+                </span>
+              </div>
+            </div>
+
+            {/* Step 2 */}
+            <div className="rounded-2xl border border-[var(--line)] bg-[var(--s2)] p-5 space-y-3 relative overflow-hidden group hover:border-[#00C2FF]/50 transition-colors">
+              <div className="flex items-center justify-between">
+                <span className="flex size-9 items-center justify-center rounded-xl bg-[#00C2FF]/15 text-[#00C2FF] text-xs font-black">
+                  02
+                </span>
+                <QrCode className="size-4 text-[var(--mut)] group-hover:text-[#00C2FF] transition-colors" />
+              </div>
+              <h4 className="text-sm font-extrabold text-[var(--tx)]">Generate Deposit Address</h4>
+              <p className="text-xs text-[var(--mut)] leading-relaxed">
+                Click <strong>Generate Deposit Invoice</strong> to open your order screen. The system assigns a unique deposit address and scannable QR code.
+              </p>
+              <div className="pt-2">
+                <span className="inline-block text-[10px] font-bold text-[#2FBD8E] bg-[#2FBD8E]/10 px-2 py-0.5 rounded-md">
+                  Single-Use Protected Address
+                </span>
+              </div>
+            </div>
+
+            {/* Step 3 */}
+            <div className="rounded-2xl border border-[var(--line)] bg-[var(--s2)] p-5 space-y-3 relative overflow-hidden group hover:border-[#00C2FF]/50 transition-colors">
+              <div className="flex items-center justify-between">
+                <span className="flex size-9 items-center justify-center rounded-xl bg-[#00C2FF]/15 text-[#00C2FF] text-xs font-black">
+                  03
+                </span>
+                <ArrowRightLeft className="size-4 text-[var(--mut)] group-hover:text-[#00C2FF] transition-colors" />
+              </div>
+              <h4 className="text-sm font-extrabold text-[var(--tx)]">Send from Any Wallet</h4>
+              <p className="text-xs text-[var(--mut)] leading-relaxed">
+                Transfer from Binance, Bybit, Coinbase, Trust Wallet, MetaMask, or any exchange. Always double-check that the transfer network matches.
+              </p>
+              <div className="pt-2">
+                <span className="inline-block text-[10px] font-bold text-[#FFAA00] bg-[#FFAA00]/10 px-2 py-0.5 rounded-md">
+                  Exchange Friendly
+                </span>
+              </div>
+            </div>
+
+            {/* Step 4 */}
+            <div className="rounded-2xl border border-[var(--line)] bg-[var(--s2)] p-5 space-y-3 relative overflow-hidden group hover:border-[#00C2FF]/50 transition-colors">
+              <div className="flex items-center justify-between">
+                <span className="flex size-9 items-center justify-center rounded-xl bg-[#00C2FF]/15 text-[#00C2FF] text-xs font-black">
+                  04
+                </span>
+                <CheckCircle2 className="size-4 text-[var(--mut)] group-hover:text-[#2FBD8E] transition-colors" />
+              </div>
+              <h4 className="text-sm font-extrabold text-[var(--tx)]">Automated Credit</h4>
+              <p className="text-xs text-[var(--mut)] leading-relaxed">
+                Once confirmed on the blockchain (usually 1-3 minutes), your $OKN token allocation updates automatically in your portfolio.
+              </p>
+              <div className="pt-2">
+                <span className="inline-block text-[10px] font-bold text-[#2FBD8E] bg-[#2FBD8E]/10 px-2 py-0.5 rounded-md">
+                  Instant Merkle Ledger Credit
+                </span>
+              </div>
+            </div>
+          </div>
+        ) : (
+          /* ================= CONNECT WALLET STEPS ================= */
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Step 1 */}
+            <div className="rounded-2xl border border-[var(--line)] bg-[var(--s2)] p-5 space-y-3 relative overflow-hidden group hover:border-[#7A12F5]/50 transition-colors">
+              <div className="flex items-center justify-between">
+                <span className="flex size-9 items-center justify-center rounded-xl bg-[#7A12F5]/15 text-[#C9A6FF] text-xs font-black">
+                  01
+                </span>
+                <Wallet className="size-4 text-[var(--mut)] group-hover:text-[#7A12F5] transition-colors" />
+              </div>
+              <h4 className="text-sm font-extrabold text-[var(--tx)]">Connect Web3 Wallet</h4>
+              <p className="text-xs text-[var(--mut)] leading-relaxed">
+                Click <strong>Connect Wallet</strong> to pair MetaMask, Trust Wallet, Rabby, or WalletConnect. Make sure your network is set to <strong>BNB Smart Chain (56)</strong>.
+              </p>
+              <div className="pt-2">
+                <span className="inline-block text-[10px] font-bold text-[#C9A6FF] bg-[#7A12F5]/15 px-2 py-0.5 rounded-md">
+                  Native BSC Integration
+                </span>
+              </div>
+            </div>
+
+            {/* Step 2 */}
+            <div className="rounded-2xl border border-[var(--line)] bg-[var(--s2)] p-5 space-y-3 relative overflow-hidden group hover:border-[#7A12F5]/50 transition-colors">
+              <div className="flex items-center justify-between">
+                <span className="flex size-9 items-center justify-center rounded-xl bg-[#7A12F5]/15 text-[#C9A6FF] text-xs font-black">
+                  02
+                </span>
+                <Coins className="size-4 text-[var(--mut)] group-hover:text-[#7A12F5] transition-colors" />
+              </div>
+              <h4 className="text-sm font-extrabold text-[var(--tx)]">Enter BNB Amount</h4>
+              <p className="text-xs text-[var(--mut)] leading-relaxed">
+                Input your BNB amount (min 0.05 BNB). Orders of 1.0 BNB or more automatically receive an extra <strong>+5% Bonus Tokens</strong> on top of base allocation.
+              </p>
+              <div className="pt-2">
+                <span className="inline-block text-[10px] font-bold text-[#FFD60A] bg-[#FFD60A]/10 px-2 py-0.5 rounded-md">
+                  +5% Bonus on ≥ 1 BNB
+                </span>
+              </div>
+            </div>
+
+            {/* Step 3 */}
+            <div className="rounded-2xl border border-[var(--line)] bg-[var(--s2)] p-5 space-y-3 relative overflow-hidden group hover:border-[#7A12F5]/50 transition-colors">
+              <div className="flex items-center justify-between">
+                <span className="flex size-9 items-center justify-center rounded-xl bg-[#7A12F5]/15 text-[#C9A6FF] text-xs font-black">
+                  03
+                </span>
+                <ShoppingCart className="size-4 text-[var(--mut)] group-hover:text-[#7A12F5] transition-colors" />
+              </div>
+              <h4 className="text-sm font-extrabold text-[var(--tx)]">Confirm in Wallet</h4>
+              <p className="text-xs text-[var(--mut)] leading-relaxed">
+                Click <strong>Buy Now</strong>. Your wallet will prompt an on-chain transaction. Confirm the standard network gas (~$0.05-$0.10 in BNB) to execute.
+              </p>
+              <div className="pt-2">
+                <span className="inline-block text-[10px] font-bold text-[#2FBD8E] bg-[#2FBD8E]/10 px-2 py-0.5 rounded-md">
+                  Ultra-Low Gas on BSC
+                </span>
+              </div>
+            </div>
+
+            {/* Step 4 */}
+            <div className="rounded-2xl border border-[var(--line)] bg-[var(--s2)] p-5 space-y-3 relative overflow-hidden group hover:border-[#7A12F5]/50 transition-colors">
+              <div className="flex items-center justify-between">
+                <span className="flex size-9 items-center justify-center rounded-xl bg-[#7A12F5]/15 text-[#C9A6FF] text-xs font-black">
+                  04
+                </span>
+                <Zap className="size-4 text-[var(--mut)] group-hover:text-[#2FBD8E] transition-colors" />
+              </div>
+              <h4 className="text-sm font-extrabold text-[var(--tx)]">Instant On-Chain Swap</h4>
+              <p className="text-xs text-[var(--mut)] leading-relaxed">
+                The smart contract processes your contribution in 3 seconds. Your $OKN token balance is registered directly to your connected wallet address.
+              </p>
+              <div className="pt-2">
+                <span className="inline-block text-[10px] font-bold text-[#2FBD8E] bg-[#2FBD8E]/10 px-2 py-0.5 rounded-md">
+                  Instant On-Chain Confirmation
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 3 Pillars of Presale Trust Banner */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+          <div className="flex items-start gap-3 p-4 rounded-2xl border border-[var(--line)] bg-[var(--s2)]">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-[#2FBD8E]/15 text-[#2FBD8E]">
+              <Clock className="size-5" />
+            </div>
+            <div>
+              <div className="text-xs font-extrabold text-[var(--tx)]">Under 3 Min Settlement</div>
+              <div className="text-[11px] text-[var(--mut)] mt-0.5">
+                Automated blockchain indexing verifies transactions and reflects balances rapidly.
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-3 p-4 rounded-2xl border border-[var(--line)] bg-[var(--s2)]">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-[#7A12F5]/15 text-[#C9A6FF]">
+              <Lock className="size-5" />
+            </div>
+            <div>
+              <div className="text-xs font-extrabold text-[var(--tx)]">Zero Slippage Guarantee</div>
+              <div className="text-[11px] text-[var(--mut)] mt-0.5">
+                Fixed pricing of 1,000,000 $OKN per 1 BNB (~$0.00060) regardless of market volatility.
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-3 p-4 rounded-2xl border border-[var(--line)] bg-[var(--s2)]">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-[#00C2FF]/15 text-[#00C2FF]">
+              <ShieldCheck className="size-5" />
+            </div>
+            <div>
+              <div className="text-xs font-extrabold text-[var(--tx)]">Direct Merkle Security</div>
+              <div className="text-[11px] text-[var(--mut)] mt-0.5">
+                Your allocation is cryptographically anchored to BSC smart contracts ready for launch.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Purchasing FAQs Accordion */}
+        <div className="pt-4 border-t border-[var(--line)] space-y-3">
+          <div className="flex items-center gap-2 text-xs font-extrabold text-[var(--tx)]">
+            <HelpCircle className="size-4 text-[#7A12F5]" />
+            <span>Frequently Asked Questions</span>
+          </div>
+
+          <div className="space-y-2">
+            {[
+              {
+                q: 'Which payment option should I choose: Deposit or Connect Wallet?',
+                a: 'If you have BNB on BNB Smart Chain in a Web3 wallet (MetaMask, Trust Wallet), Connect Wallet gives you an instant 1-click swap. If your funds are on centralized exchanges (Binance, Coinbase, Bybit) or you prefer paying with USDT, BTC, ETH, or SOL, choose Deposit to generate a direct receiving address with zero wallet connection required.',
+              },
+              {
+                q: 'Can I send my deposit directly from an exchange like Binance or Coinbase?',
+                a: 'Yes! The Deposit option generates a dedicated receiving address that accepts direct transfers from any exchange. Just ensure you select the exact matching network when initiating the withdrawal from your exchange.',
+              },
+              {
+                q: 'How do I receive my +5% Bonus tokens?',
+                a: 'Any contribution of 1.0 BNB or more (or equivalent in deposit crypto) automatically triggers the +5% Tier Bonus calculator. Bonus tokens are added to your total allocation and displayed in your portfolio.',
+              },
+              {
+                q: 'When and how will my purchased $OKN tokens be claimed?',
+                a: 'Tokens are credited instantly to your dashboard profile and recorded on the smart contract Merkle root. At the conclusion of the presale, you can claim your tokens directly to your BSC wallet with zero vesting delays.',
+              },
+            ].map((faq, idx) => (
+              <div
+                key={faq.q}
+                className="rounded-xl border border-[var(--line)] bg-[var(--s2)] overflow-hidden transition-all"
+              >
+                <button
+                  type="button"
+                  onClick={() => setExpandedFaq(expandedFaq === idx ? null : idx)}
+                  className="w-full flex items-center justify-between p-3.5 text-left text-xs font-extrabold text-[var(--tx)] hover:text-[#7A12F5] transition-colors cursor-pointer"
+                >
+                  <span>{faq.q}</span>
+                  <ChevronDown
+                    className={`size-4 text-[var(--mut)] transition-transform duration-200 shrink-0 ${
+                      expandedFaq === idx ? 'rotate-180 text-[#7A12F5]' : ''
+                    }`}
+                  />
+                </button>
+                {expandedFaq === idx && (
+                  <div className="px-3.5 pb-3.5 text-xs text-[var(--mut)] leading-relaxed border-t border-[var(--line)]/50 pt-2.5">
+                    {faq.a}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 5. Live Crypto Deposit Invoice Modal */}
       {showInvoiceModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
           <div className="w-full max-w-md rounded-[28px] border border-[var(--line)] bg-[var(--s1)] p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <span className="flex size-7 items-center justify-center rounded-lg bg-[#00C2FF]/20 text-[#00C2FF] font-bold text-xs">
-                  NP
+                <span className="flex size-8 items-center justify-center rounded-xl bg-[#00C2FF]/20 text-[#00C2FF]">
+                  <Coins className="size-4" />
                 </span>
-                <h3 className="text-base font-extrabold text-[var(--tx)]">NOWPayments Invoice</h3>
+                <h3 className="text-base font-extrabold text-[var(--tx)]">Crypto Deposit Invoice</h3>
               </div>
               <button
                 onClick={() => setShowInvoiceModal(false)}

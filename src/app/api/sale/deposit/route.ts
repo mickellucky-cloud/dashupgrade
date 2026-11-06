@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 /**
  * POST /api/sale/deposit
- * Creates a crypto deposit payment via NOWPayments or payment processor.
+ * Creates a crypto deposit payment via automated payment processor.
  * Returns unique deposit wallet address, amount, QR code, and expiry.
  */
 export async function POST(req: NextRequest) {

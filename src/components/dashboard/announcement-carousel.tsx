@@ -179,7 +179,7 @@ export function AnnouncementCarousel({ id = 'ann-carousel' }: { id?: string }) {
                       Buy $OKN Presale — <span className="text-[#F59E0B] dark:text-[#FBBF24]">Multi-Gateway</span> Live
                     </h3>
                     <p className="text-xs sm:text-[13px] text-[var(--mut)] font-medium truncate mt-0.5">
-                      Multi-Gateway: Web3 BNB &amp; NOWPayments (300+ crypto) with instant allocation.
+                      Multi-Gateway: Connect Wallet &amp; Direct Deposit (300+ crypto) with instant allocation.
                     </p>
                   </div>
                 </div>

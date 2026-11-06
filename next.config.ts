@@ -33,6 +33,7 @@ const nextConfig: NextConfig = {
     minimumCacheTTL: 86400,
   },
   transpilePackages: ['@okn/shared'],
+  serverExternalPackages: ['@coinbase/cdp-sdk', 'pino', 'pino-pretty'],
   typescript: {
     ignoreBuildErrors: true,
   },
